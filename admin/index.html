@@ -61,7 +61,7 @@
             // 通过 Ajax 向服务器发送请求获取用户信息
             $.ajax({
                 // 获取用户信息的接口
-                url: "http://localhost:8080/api/v1/admin/user/info",
+                url: urls.userInfo,
                 success: function (response) {
                     console.log(response);
                     const nickname = response.data.nickname;

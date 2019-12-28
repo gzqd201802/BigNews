@@ -63,6 +63,7 @@
                 location.href = './login.html';
             }
 
+            // 通过 Ajax 向服务器发送请求获取用户信息
             $.ajax({
                 // 获取用户信息的接口
                 url: "http://localhost:8080/api/v1/admin/user/info",
@@ -76,7 +77,6 @@
                     console.log(response);
                     const nickname = response.data.nickname;
                     const userPic = response.data.userPic;
-                    
                     $('.user_info img, .user_center_link img').attr('src', userPic);
                     $('.user_info span').html('欢迎大佬：' + nickname);
                 }

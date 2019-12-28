@@ -37,6 +37,26 @@
       </form>
     </div>
   </div>
+  <!-- BS 插件模态框结构 Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- data-dismiss="modal" 用于模态框的 -->
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <!-- data-dismiss="modal" 用于模态框的 -->
+          <button type="button" class="btn btn-success" data-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
     $(function () {
       // 给 login_form 注册提交事件
@@ -48,7 +68,8 @@
         const input_pass = $('.input_pass').val().trim();
         // 用户名和密码的非空判断
         if (input_txt === '' || input_pass === '') {
-          alert('傻子,用户名或密码为空');
+          $('.modal-body').html('傻子,用户名或密码为空');
+          $('#myModal').modal({ keyboard: true });
           // 用户名密码有问题就 return 退出，代码无需往后执行
           return;
         }
@@ -74,16 +95,15 @@
             const token = response.token;
             // 登录成功后台返回200，用于分支判断
             if (code === 200) {
-              // 弹出返回的 msg 提示信息
-              alert(msg);
               // 把 token 保存到浏览器本地存储
               localStorage.setItem('token', token);
               // 跳转到后台管理系统首页
               location.href = './index.html';
-            } else {
-              // 其他情况直接弹出登录信息
-              alert(msg);
             }
+            // 弹出返回的 msg 提示信息
+            $('.modal-body').html(msg);
+            // 调用 BootStrap 的模态框插件，模态框 id 为 myModal
+            $('#myModal').modal({ keyboard: true });
           }
         });
       });

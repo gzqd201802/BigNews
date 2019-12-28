@@ -54,5 +54,35 @@
 
         </div>
     </div>
+    <script>
+        $(function () {
+            // 获取有没有 token 令牌
+            const token = localStorage.getItem('token');
+            // 没有令牌跳转会登录页(登录接口用户用于获取令牌的)
+            if (!token) {
+                location.href = './login.html';
+            }
+
+            $.ajax({
+                // 获取用户信息的接口
+                url: "http://localhost:8080/api/v1/admin/user/info",
+                // 设置请求头
+                headers: {
+                    // token 令牌告诉服务器，当前是哪个用户要访问数据
+                    // Authorization 翻译是授权的意思，值就为我们的 token
+                    Authorization: token
+                },
+                success: function (response) {
+                    console.log(response);
+                    const nickname = response.data.nickname;
+                    const userPic = response.data.userPic;
+                    
+                    $('.user_info img, .user_center_link img').attr('src', userPic);
+                    $('.user_info span').html('欢迎大佬：' + nickname);
+                }
+            });
+        })
+    </script>
 </body>
+
 </html>

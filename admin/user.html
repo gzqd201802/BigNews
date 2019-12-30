@@ -95,6 +95,7 @@
                     }
                 }
             });
+            let url;
             // 功能2：input type=file 内容发送改变的时候，更换预览图片
             $('#exampleInputFile').change(function () {
                 console.dir(this);
@@ -104,7 +105,7 @@
                 // file 就是选取文件，用户如果选择图片但取消了会得到 undefined，所以添加个判断
                 if (file) {
                     // 通过浏览器提供的 URL 对象，把文件转成浏览器能识别特殊的路径
-                    const url = window.URL.createObjectURL(file);
+                    url = window.URL.createObjectURL(file);
                     // 把图片的 src 设置成上传的图片路径
                     $('.user_pic').attr('src', url);
                 }
@@ -112,6 +113,39 @@
             // 功能2升级：点击图片，通过 trigger 主动触发文件上传的点击事件
             $('.user_pic').click(function () {
                 $('#exampleInputFile').trigger('click');
+            });
+
+            // console.log('iframe中 user.html 的输出', parent);
+
+            // 功能3：修改数据
+            $('#form').submit(function (e) {
+                e.preventDefault();
+                // this 在这个事件里面代表这个表单对象。
+                // new FormData()  传入 form 表单对象，可以把表单对象的里面的数据转成 formData 对象
+                const fdObj = new FormData(this);
+                $.ajax({
+                    type: "post",
+                    url: urls.user_edit,
+                    // 注意这里是传输 FormData 对象
+                    data: fdObj,
+                    // !! contentType 默认值为："application/x-www-form-urlencoded"
+                    contentType: false,
+                    // !! processData：如果要发送 DOM 树信息或其它不希望转换的信息，请设置为 false。
+                    processData: false,
+                    success: function (response) {
+                        console.log(response);
+                        const msg = response.msg;
+                        alert(msg);
+                        // 父页面刷新
+                        // parent.location.reload();
+                        // 从 fromData 对象中把图片转 url 路径
+                        const url = URL.createObjectURL(fdObj.get('userPic'));
+                        const nickname = fdObj.get('nickname');
+                        parent.$('.user_info img,.user_center_link img').attr('src', url);
+                        parent.$('.user_info span').html('欢迎大佬：' + nickname);
+                    }
+                });
+
             });
         });
     </script>

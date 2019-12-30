@@ -73,7 +73,28 @@
         // 用户中心的业务代码，需要在当前 user.html 内书写
         // 在后台管理系统的 index.html 页面中，可通过 iframe 标签加载 user.html 页面
         $(function () {
-            
+            // 功能1：获取用户数据并渲染
+            $.ajax({
+                url: urls.user_detail,
+                success: function (response) {
+                    // 从返回值中，把需要的数据取出来
+                    const data = response.data;
+                    const code = response.code;
+                    // 如果返回 200，获取到数据
+                    if (code === 200) {
+                        // $.each() 遍历 data 数据
+                        $.each(data, function (key, value) {
+                            // 如果不是图片
+                            if (key !== 'userPic') {
+                                // 通过属性选择器[name=xxx] 方式设置表单值
+                                $(`[name="${key}"]`).val(value);
+                            }
+                        });
+                        // 图片标签特殊处理，修改 src 属性
+                        $('.user_pic').attr('src', data.userPic);
+                    }
+                }
+            });
         });
     </script>
 </body>

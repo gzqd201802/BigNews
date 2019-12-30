@@ -95,6 +95,7 @@
                     }
                 }
             });
+            // 方案1：把 url 提升作用域，可用于修改父页面图片
             let url;
             // 功能2：input type=file 内容发送改变的时候，更换预览图片
             $('#exampleInputFile').change(function () {
@@ -138,7 +139,7 @@
                         alert(msg);
                         // 父页面刷新
                         // parent.location.reload();
-                        // 从 fromData 对象中把图片转 url 路径
+                        // 方案2：从 fromData 对象中把图片转 url 路径，或者选用方案1，注释掉方案2
                         const url = URL.createObjectURL(fdObj.get('userPic'));
                         const nickname = fdObj.get('nickname');
                         parent.$('.user_info img,.user_center_link img').attr('src', url);

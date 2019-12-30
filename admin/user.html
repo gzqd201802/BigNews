@@ -95,6 +95,24 @@
                     }
                 }
             });
+            // 功能2：input type=file 内容发送改变的时候，更换预览图片
+            $('#exampleInputFile').change(function () {
+                console.dir(this);
+                // this   就代表当前点击的上传输入框。(输入框默认只能传一个文件)
+                // files  是文件列表，伪数组格式 [0] 就代表第一项
+                const file = this.files[0];
+                // file 就是选取文件，用户如果选择图片但取消了会得到 undefined，所以添加个判断
+                if (file) {
+                    // 通过浏览器提供的 URL 对象，把文件转成浏览器能识别特殊的路径
+                    const url = window.URL.createObjectURL(file);
+                    // 把图片的 src 设置成上传的图片路径
+                    $('.user_pic').attr('src', url);
+                }
+            });
+            // 功能2升级：点击图片，通过 trigger 主动触发文件上传的点击事件
+            $('.user_pic').click(function () {
+                $('#exampleInputFile').trigger('click');
+            });
         });
     </script>
 </body>

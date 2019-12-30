@@ -52,6 +52,34 @@
             </table>
         </div>
     </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">分类管理</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类说明:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-success" id="modalSubmit">新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- 引入封装的js -->
     <script src="./js/http.js"></script>
     <!-- 模板引擎结构 -->
@@ -90,6 +118,22 @@
                     const htmlStr = template('list', data);
                     // 把生成的列表添加到 tbody 内部
                     $('.category_table tbody').html(htmlStr);
+                }
+            });
+            
+            // BS 模态框专属事件，当 BS 模态框显示的时候触发
+            $('#myModal').on('show.bs.modal', function (e) {
+                // e.relatedTarget 获取点击按钮的文本内容
+                const str = $(e.relatedTarget).text();
+                // 把点击按钮的文本内容设置成模态框右下角文字
+                $('#modalSubmit').text(str);
+                // 点击不同按钮，模态框的右下角按钮颜色不一样
+                if (str === '编辑') {
+                    // 编辑蓝色按钮
+                    $('#modalSubmit').attr('class', 'btn btn-info');
+                } else {
+                    // 新增绿色按钮
+                    $('#modalSubmit').attr('class', 'btn btn-success');
                 }
             });
         })

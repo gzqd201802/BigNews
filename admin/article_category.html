@@ -43,7 +43,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="javascript:void(0)" class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
+                            <!--  data-target="#myModal"  通过 data-自定义属性调用模态框 -->
+                            <a class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
                                 data-target="#myModal">新增分类</a>
                         </td>
                     </tr>
@@ -51,5 +52,47 @@
             </table>
         </div>
     </div>
+    <!-- 引入封装的js -->
+    <script src="./js/http.js"></script>
+    <!-- 模板引擎结构 -->
+    <script id="list" type="text/html">
+        {{each}}
+        <tr>
+            <td>{{$value.name}}</td>
+            <td>{{$value.slug}}</td>
+            <td class="text-center">
+                <a data-target="#myModal" data-id="{{$value.id}}" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
+                <a data-id="{{$value.id}}" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script>
+        $(function () {
+            // 文章类别查询
+            $.ajax({
+                url: urls.category_list,
+                success: function (response) {
+                    // 获取到 response 核心列表数据
+                    const data = response.data;
+                    // 列表渲染方案1：数组 map 方法配合模板字符串生成列表字符串
+                    // const htmlStr = data.map(function (item) {
+                    //     return `<tr>
+                    //         <td>${item.name}</td>
+                    //         <td>${item.slug}</td>
+                    //         <td class="text-center">
+                    //             <a href="javascript:void(0)" data-id="${item.id}" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
+                    //             <a href="javascript:void(0)" data-id="${item.id}" class="btn btn-danger btn-xs">删除</a>
+                    //         </td>
+                    //     </tr>`
+                    // });
+                    // 列表渲染方案2：art-template 模板引擎库
+                    const htmlStr = template('list', data);
+                    // 把生成的列表添加到 tbody 内部
+                    $('.category_table tbody').html(htmlStr);
+                }
+            });
+        })
+    </script>
 
 </html>

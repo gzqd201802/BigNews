@@ -52,7 +52,7 @@
             </table>
         </div>
     </div>
-
+    <!-- id="myModal" 记得修改模态框的默认 id -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -120,22 +120,57 @@
                     $('.category_table tbody').html(htmlStr);
                 }
             });
-            
+
             // BS 模态框专属事件，当 BS 模态框显示的时候触发
             $('#myModal').on('show.bs.modal', function (e) {
                 // e.relatedTarget 获取点击按钮的文本内容
-                const str = $(e.relatedTarget).text();
+                const $current = $(e.relatedTarget);
+                const str = $current.text();
                 // 把点击按钮的文本内容设置成模态框右下角文字
                 $('#modalSubmit').text(str);
                 // 点击不同按钮，模态框的右下角按钮颜色不一样
                 if (str === '编辑') {
                     // 编辑蓝色按钮
                     $('#modalSubmit').attr('class', 'btn btn-info');
+                    // 获取当前编辑按钮对应的 name 文本
+                    const name = $current.parent().prev().prev().text();
+                    // 获取当前编辑按钮对应的 slug 文本
+                    const slug = $current.parent().prev().text();
+                    // 把值更新到模态框内部的 input 标签
+                    $('#recipient-name').val(name);
+                    $('#message-text').val(slug);
                 } else {
                     // 新增绿色按钮
                     $('#modalSubmit').attr('class', 'btn btn-success');
+                    // 主动触发重置 form 表单
+                    $('#myModal form').trigger('reset');
                 }
             });
+
+            $('#modalSubmit').click(function () {
+                const str = $(this).text();
+                if (str === '新增分类') {
+                    $.ajax({
+                        type: "post",
+                        url: urls.category_add,
+                        data: {
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val()
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            // console.log(response);
+                            const code = response.code;
+                            if (code === 201) {
+                                location.reload();
+                            }
+                        }
+                    });
+                } else if (str === '编辑') {
+                    // alert(str);
+                }
+            });
+
         })
     </script>
 

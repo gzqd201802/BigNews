@@ -13,6 +13,8 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <!-- 步骤1：引入 jq 分页器插件 -->
+    <script src="./libs/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -69,6 +71,8 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <!-- 步骤2：分页器分区盒子 -->
+                <ul id="pagination" class="pagination-sm"></ul>
             </div>
         </div>
     </div>
@@ -127,11 +131,15 @@
                         // 获取 response 中数据
                         const code = response.code;
                         const data = response.data;
+                        // 步骤3.1：获取请求成功时候的总页数
+                        const totalPage = response.data.totalPage;
                         if (code === 200) {
                             // 往模板引擎中传入数组数据，模板引擎内部根据数组渲染列表
                             const htmlStr = template('articleList', data.data);
                             // 写入到 tbody 中
                             $('tbody').html(htmlStr);
+                            // 步骤3.2：根据总页数和当前页重置分页器
+                            resetPage(totalPage, page);
                         }
                     }
                 });
@@ -174,6 +182,34 @@
                 });
             });
 
+            // 功能5：jq 分页器封装
+            const $pagination = $('#pagination');
+            // totalPages 总页数，startPage 默认页
+            function resetPage(totalPages = 5, startPage = 1) {
+                // 先销毁旧的分页器，因为每次请求返回的总页数不确定
+                $pagination.twbsPagination('destroy');
+                // 启用分页器插件
+                $pagination.twbsPagination({
+                    first: '首页',
+                    prev: '上一页',
+                    next: '下一页',
+                    last: '尾页',
+                    startPage: startPage,
+                    // 总页数
+                    totalPages: totalPages,
+                    // 可见页数上限
+                    visiblePages: 7,
+                    // 点击页码事件回调 - 事件
+                    onPageClick: function (event, page) {
+                        // console.log('page 当前是第几页', page);
+                        // 获取点击分页器的页面，用于向服务器发起请求
+                        if (startPage !== page) { // 起始页不等于当前页才发请求
+                            getArticleList(page);
+                        }
+                    }
+                });
+            }
+            
         })
     </script>
 </body>

@@ -72,6 +72,110 @@
             </div>
         </div>
     </div>
+    <script id="selCategoryList" type="text/html">
+        <option value="">所有分类</option>
+        {{ each }}  
+            <option value="{{ $value.id }}">{{ $value.name }}</option>  
+        {{ /each }}
+    </script>
+    <script id="articleList" type="text/html">
+        {{ each }}  
+            <tr>
+                <td>{{ $value.title }}</td>
+                <td>{{ $value.author }}</td>
+                <td>{{ $value.category }}</td>
+                <td class="text-center">{{ $value.date }}</td>
+                <td class="text-center">{{ $value.state }}</td>
+                <td class="text-center">
+                    <a href="article_edit.html?id={{ $value.id }}" class="btn btn-default btn-xs">编辑</a>
+                    <a href="javascript:void(0);" data-id="{{ $value.id }}" class="btn btn-danger btn-xs delete">删除</a>
+                </td>
+            </tr>
+        {{ /each }}
+    </script>
+    <script src="./js/http.js"></script>
+    <script>
+        $(function () {
+            // 功能1：查询文章分类
+            $.ajax({
+                url: urls.category_list,
+                success: function (response) {
+                    const data = response.data;
+                    const htmlStr = template('selCategoryList', data);
+                    $('#selCategory').html(htmlStr);
+                }
+            });
+
+            // 功能2：!!!查询文章列表封装 - 因为需要文章列表获取和渲染需要在多个事件中都被掉调用。
+            function getArticleList(page = 1) {  // 开放 page=1 参数，用于点击分页器切换分页，默认第一页
+                // 向服务器发起请求
+                $.ajax({
+                    // 注意路径
+                    url: urls.article_query,
+                    // 注意参数
+                    data: {
+                        // type 和 state 通过下拉框获取值最新值
+                        type: $('#selCategory').val(),
+                        state: $('#selStatus').val(),
+                        // page 代表第几页
+                        page: page,
+                        // perpage 代表每页显示条数
+                        perpage: 10,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        // 获取 response 中数据
+                        const code = response.code;
+                        const data = response.data;
+                        if (code === 200) {
+                            // 往模板引擎中传入数组数据，模板引擎内部根据数组渲染列表
+                            const htmlStr = template('articleList', data.data);
+                            // 写入到 tbody 中
+                            $('tbody').html(htmlStr);
+                        }
+                    }
+                });
+            }
+            // 功能2调用：页面打开的时候获取一次数据
+            getArticleList();
+
+            // 功能3：点击筛选按钮，再根据下拉框的值重新发起请求
+            $('#btnSearch').click(function (e) {
+                // 阻止默认行为
+                e.preventDefault();
+                // 再调用获取数据，并渲染到页面
+                getArticleList();
+            });
+
+            // 功能4：点击删除按钮
+            $('tbody').on('click', '.delete', function () {
+                // 获取当前删除按钮的 id 值
+                const id = $(this).attr('data-id');
+                // 文章删除
+                $.ajax({
+                    type: "post",
+                    // 注意 url 不要把 <文章删除> 和 <文章类别删除> 接口搞混了!!!
+                    url: urls.article_delete,
+                    // 参数
+                    data: {
+                        id: id
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        // 获取提示信息
+                        const msg = response.msg;
+                        alert(msg);
+                        // 更新页面两种方案
+                        // 方案1：整个页面重新加载 - 慢
+                        // location.reload();
+                        // 方案2：调用封装的方法，局部刷新 - 快
+                        getArticleList();
+                    }
+                });
+            });
+
+        })
+    </script>
 </body>
 
 </html>
